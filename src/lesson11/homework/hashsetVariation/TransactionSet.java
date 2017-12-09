@@ -15,29 +15,42 @@ public class TransactionSet {
     public void addTransaction(Transaction transaction) {
         switch (transaction.getFrom()) {
             case "HANSA":
-                if (!hansaExists(transaction)) {
+                if (!contains(transaction)) {
                     fromHansa.add(transaction);
                 }
                 break;
             case "PAREX":
-                if (!parexExists(transaction)) {
+                if (!contains(transaction)) {
                     fromParex.add(transaction);
                 }
                 break;
 
             default:
-                if (!otherExists(transaction)) {
+                if (!contains(transaction)) {
                     fromOther.add(transaction);
                 }
                 break;
         }
     }
 
+    public boolean contains(Transaction transaction) {
+        List<Transaction> fromList;
+        switch (transaction.getFrom()) {
+            case "HANSA":
+                fromList = fromHansa;
+                break;
+            case "PAREX":
+                fromList = fromParex;
+                break;
 
-    public boolean hansaExists(Transaction transaction) {
-        for (int i = 0; i < fromHansa.size(); i++) {
-            Transaction fromList = fromHansa.get(i);
-            if (transaction.equals(fromList)) {
+            default:
+                fromList = fromOther;
+                break;
+        }
+
+        for (int i = 0; i < fromList.size(); i++) {
+            Transaction fromBank = fromList.get(i);
+            if (transaction.equals(fromBank)) {
                 return true;
             }
         }
@@ -45,25 +58,50 @@ public class TransactionSet {
         return false;
     }
 
-    public boolean parexExists(Transaction transaction) {
-        for (int i = 0; i < fromParex.size(); i++) {
-            Transaction fromList = fromParex.get(i);
-            if (transaction.equals(fromList)) {
-                return true;
-            }
+    public int size() {
+        int sum = fromHansa.size() + fromParex.size() + fromOther.size();
+        return sum;
+    }
+
+    public boolean remove(Transaction transaction) {
+
+        switch (transaction.getFrom()) {
+            case "HANSA":
+                if (contains(transaction)) {
+                    fromHansa.remove(transaction);
+                    return true;
+                }
+                break;
+
+
+            case "PAREX":
+                if (contains(transaction)) {
+                    fromParex.remove(transaction);
+                    return true;
+                }
+                break;
+
+            default:
+                if (contains(transaction)) {
+                    fromOther.remove(transaction);
+                    return true;
+                }
+                break;
         }
 
         return false;
     }
 
-    public boolean otherExists(Transaction transaction) {
-        for (int i = 0; i < fromOther.size(); i++) {
-            Transaction fromList = fromOther.get(i);
-            if (transaction.equals(fromList)) {
-                return true;
-            }
-        }
+    public void clear() {
+        fromOther.clear();
+        fromParex.clear();
+        fromHansa.clear();
+    }
 
+    public boolean isEmpty() {
+        if (fromHansa.isEmpty() && fromParex.isEmpty() && fromOther.isEmpty()) {
+            return true;
+        }
         return false;
     }
 
